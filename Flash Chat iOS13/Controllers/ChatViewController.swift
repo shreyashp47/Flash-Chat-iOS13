@@ -19,7 +19,7 @@ class ChatViewController: UIViewController {
         navigationItem.hidesBackButton = true
         let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
-        navigationItem.title = "⚡️FlashChat"
+        navigationItem.title = Constants.appName
 
     }
     
