@@ -23,6 +23,8 @@ class MessageCell: UITableViewCell {
 
         // Configure the view for the selected state
         messageBubble.layer.cornerRadius = messageBubble.frame.size.height/5
+        
+        
     }
     
 }

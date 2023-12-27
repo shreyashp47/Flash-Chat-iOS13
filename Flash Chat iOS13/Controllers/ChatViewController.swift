@@ -8,16 +8,16 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestoreInternal
 
 class ChatViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextfield: UITextField!
     
+    let db = Firestore.firestore()
+    
     var messages : [Message] = [
-        Message(sender: "shreyash@g.com", body: "hii"),
-        Message(sender: "your@s.com",body: "hello hello hello hello hello hello hello hello hello "),
-        Message(sender: "shreyash@g.com", body: "wasuo")
     ]
     
     override func viewDidLoad() {
@@ -30,9 +30,51 @@ class ChatViewController: UIViewController {
         
         tableView.register(UINib(nibName: Constants.cellNibName, bundle: nil), forCellReuseIdentifier: Constants.cellIdentifier)
 
+        loadMessages()
     }
     
     @IBAction func sendPressed(_ sender: UIButton) {
+      if  let messageBoady = messageTextfield.text,
+          let messageSemder = Auth.auth().currentUser?.email {
+          db.collection(Constants.FStore.collectionName).addDocument(data: [Constants.FStore.senderField: messageSemder,Constants.FStore.bodyField: messageBoady]) { (error) in
+              if let e = error {
+                  print ("error")
+              }else {
+                  print("successfully saved date")
+                  self.messageTextfield.text = ""
+              }
+          }
+      }
+        
+        
+    }
+    
+    
+    func loadMessages(){
+        messages = [ ]
+       
+        db.collection(Constants.FStore.collectionName).getDocuments { QuerySnapshot, error in
+            if let e = error{
+                print("Error got while loading data ")
+                
+            }else {
+                if let sanpshotDocuments = QuerySnapshot?.documents{
+                    for doc in sanpshotDocuments{
+                        let data = doc.data()
+                        if let sender = data[Constants.FStore.senderField] as? String, let messageBody = data[Constants.FStore.bodyField] as? String{
+                        let newMessage = Message(sender: sender, body: messageBody)
+                            self.messages.append(newMessage)
+                        }
+                        
+                    }
+                    DispatchQueue.main.async{
+                        self.tableView.reloadData()
+                    }
+                   
+                }
+            }
+        }
+
     }
     
     @IBAction func logoutPressed(_ sender: UIBarButtonItem) {
