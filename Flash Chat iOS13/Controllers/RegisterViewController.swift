@@ -26,7 +26,7 @@ class RegisterViewController: UIViewController {
                     //Make a toast to show error
                 } else {
                     //Navigate to chatViewController
-                    self.performSegue(withIdentifier: "RegisterToChat", sender: self)
+                    self.performSegue(withIdentifier: Constants.registerSegue, sender: self)
                 }
                 
                 
