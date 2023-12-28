@@ -23,8 +23,8 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.titleTextAttributes = textAttributes
+        //let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
+        //navigationController?.navigationBar.titleTextAttributes = textAttributes
         navigationItem.title = Constants.appName
         tableView.dataSource = self
         
@@ -48,8 +48,9 @@ class ChatViewController: UIViewController {
                         print ("error")
                     }else {
                         print("successfully saved date")
-                        self.messageTextfield.text = ""
-                    }
+                        DispatchQueue.main.async{
+                            self.messageTextfield.text = ""
+                        }}
                 }
             }
             
@@ -83,8 +84,10 @@ class ChatViewController: UIViewController {
                     }
                     DispatchQueue.main.async{
                         self.tableView.reloadData()
+                        let indexPath = IndexPath(row: self.messages.count-1, section: 0)
+                        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                     }
-                   
+                
                 }
             }
         }
@@ -110,9 +113,26 @@ extension ChatViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let message = messages[indexPath.row]
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath)
         as! MessageCell
         cell.label?.text = messages[indexPath.row].body
+        
+        if message.sender == Auth.auth().currentUser?.email{
+            cell.imageview.isHidden = false
+            cell.rightImageView.isHidden = true
+            cell.messageBubble.backgroundColor = UIColor(named: Constants.BrandColors.lightPurple)
+         
+            cell.label.textColor = UIColor(named: Constants.BrandColors.purple)
+        }else{
+            cell.imageview.isHidden = true
+            cell.rightImageView.isHidden = false
+            cell.messageBubble.backgroundColor = UIColor(named: Constants.BrandColors.purple)
+         
+            cell.label.textColor = UIColor(named: Constants.BrandColors.lightPurple)
+        }
         
         
         return cell
